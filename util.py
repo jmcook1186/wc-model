@@ -1,23 +1,22 @@
 
-def get_n_layers(inputs):
-    return len(inputs["layer_thicknesses"])
+def set_n_layers(inputs):
+    inputs["n_layers"] = len(inputs["layer_thicknesses"])
+    return
 
-
+def set_ks(inputs):
+    inputs["ks"] = k_in_subsurface_layers(inputs["k_star"], inputs["n_layers"], inputs["layer_thicknesses"], inputs["extinction_coefficient"], inputs["delta_t"])
+    return 
 
 def calculate_mass_loss_per_timestep(inputs):
 
-    # set initial conditions
-    n_layers = get_n_layers(inputs)
-    ks = k_in_subsurface_layers(inputs["k_star"], n_layers, inputs["layer_thicknesses"], inputs["extinction_coefficient"], inputs["delta_t"])
     qma = energy_at_surface(inputs["l_star"], inputs["qh"], inputs["qe"])
-    masses = calculate_mass_per_layer(inputs)
     # set up output array
     total_mass_loss = []
     mass_loss_ablation = []
     mass_loss_internal = []
 
-    for n in range(0,len(ks), 1):
-        qmi = ks[n]
+    for n in range(0,len(inputs["ks"]), 1):
+        qmi = inputs["ks"][n]
         p_ice = inputs["densities"][n]
         ma, mi, m = mass_loss_in_subsurface_layers(qma, qmi, p_ice, inputs["lf"])
         
@@ -33,11 +32,12 @@ def calculate_mass_loss_per_timestep(inputs):
     return total_mass_loss, mass_loss_internal
 
 
-def calculate_mass_per_layer(inputs):
+def set_masses(inputs):
     masses = []
     for i in range(0, len(inputs["layer_thicknesses"]), 1):
         masses.append(inputs["densities"][i] * inputs["layer_thicknesses"][i])
-    return masses
+    inputs["masses"] = masses
+    return
 
 
 def k_in_subsurface_layers(k_star, n_layers, layer_thicknesses, extinction_coefficient, delta_t):
@@ -102,23 +102,38 @@ def mass_loss_in_subsurface_layers(qma, qmi, p_ice, lf):
     return ma, mi, m
 
 
-def calculate_densities_in_each_layer(masses, total_mass_loss, mass_loss_internal, inputs):
+def calculate_densities_in_each_layer(total_mass_loss, mass_loss_internal, inputs):
     densities = []
+    masses = []
+    volumes = []
 
     for n in range(0,len(inputs["densities"]),1):
         
         p = inputs["densities"][n]
-        volume = masses[n] / p
+        volume = inputs["masses"][n] / p
+        volumes.append(volume)
         volume_loss_ablation = total_mass_loss[n] / p
-        densities.append((masses[n] - total_mass_loss[n]) / (volume - volume_loss_ablation))
+
+        if n == 0:
+            print("upper-layer mass", inputs["masses"][n], " mass loss", total_mass_loss[n], " volume", volume, " volume_loss_ablation", volume_loss_ablation)
+            density = (inputs["masses"][n] - total_mass_loss[n]) / (volume - volume_loss_ablation)
+            densities.append(density)
+            masses.append(density*(inputs["volumes"][n] - volume_loss_ablation)+(inputs["densities"][n]*volume_loss_ablation))
+        elif n > 0:
+            densities.append((inputs["masses"][n] - mass_loss_internal[n]) / volume)
+            masses.append(density*(inputs["volumes"][n] - volume_loss_ablation)+(inputs["densities"][n]*volume_loss_ablation))
+
+    # update initial condition
+    inputs["densities"] = densities
+    inputs["masses"] = masses
+    inputs["volumes"] = volumes
+
 
     return densities
 
-
-# def calculate_volume_lost_to_ablation(mass_loss_ablation, p_ice):
-
-#     vas = []
-#     for i in range(0, len(mass_loss_ablation), 1):
-#         va = mass_loss_ablation[i] / p_ice[i]
-#         vas.append(va)
-#     return vas
+def set_volumes(inputs):
+    volumes = []
+    for i in range(0, len(inputs["layer_thicknesses"]), 1):
+        volumes.append(inputs["masses"][i] / inputs["densities"][i])
+    inputs["volumes"] = volumes
+    return
