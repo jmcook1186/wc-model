@@ -1,26 +1,18 @@
 
-def calculate_melt_per_timestep():
-    # set initial conditions
-    layer_thicknesses = [0.01, 0.01, 0.01, 0.02, 0.02, 0.05, 0.05, 0.1] # meters
-    n_layers = len(layer_thicknesses)
-    extinction_coefficient = 0.006
-    k_star = 100
-    delta_t = 300
-    densities = [0.400, 0.450, 0.500, 0.550, 0.600, 0.650, 0.700, 0.750]
-    lf = 333.7
-    ks = k_in_subsurface_layers(k_star, n_layers, layer_thicknesses, extinction_coefficient, delta_t)
-    l_star = 5
-    qh = 20
-    qe = -2
-    qma = energy_at_surface(l_star, qh, qe)
 
+def calculate_mass_loss_per_timestep(inputs):
+
+    # set initial conditions
+    n_layers = len(inputs["layer_thicknesses"])
+    ks = k_in_subsurface_layers(inputs["k_star"], n_layers, inputs["layer_thicknesses"], inputs["extinction_coefficient"], inputs["delta_t"])
+    qma = energy_at_surface(inputs["l_star"], inputs["qh"], inputs["qe"])
     # set up output array
     ms = []
 
     for n in range(0,len(ks), 1):
         qmi = ks[n]
-        p_ice = densities[n]
-        ma, mi, m = mass_loss_in_subsurface_layers(qma, qmi, p_ice, lf)
+        p_ice = inputs["densities"][n]
+        ma, mi, m = mass_loss_in_subsurface_layers(qma, qmi, p_ice, inputs["lf"])
         ms.append(m)
 
     print("melt mass per layer (kg): ", ms)
