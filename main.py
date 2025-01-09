@@ -4,7 +4,7 @@ from inputs import inputs
 
 def run_model():
 
-    for i in range(0,2,1):
+    for i in range(0,5,1):
         set_initial_conditions(inputs, i)
         update_densities(inputs, i)
         replenish_lost_mass(inputs, i)
