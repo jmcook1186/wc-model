@@ -47,7 +47,9 @@ def plot_density_profile(outputs):
     plt.ylim = (0.6,0.8)
 
     for i in range(0, len(outputs), 1):
-        plt.plot(depths, outputs[i]["densities"])
+        time = f"t{i}"
+        plt.plot(depths, outputs[i]["densities"], label=time)
+        plt.legend()
 
     
     # for i in range(0, len(outputs), 1):
