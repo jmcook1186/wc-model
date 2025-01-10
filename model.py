@@ -3,8 +3,13 @@ import matplotlib.pyplot as plt
 
 
 def setup_next_timestep(inputs, timestep):
-    inputs["densities"] = inputs["next_densities"]
-    inputs["masses"] = inputs["new_masses"]
+    next_ds =[]
+    for i in range(0, len(inputs["densities"]), 1):
+        if inputs["next_densities"][i] >= 0.89:
+            next_ds.append(0.89)
+        else:
+            next_ds.append(inputs["next_densities"][i])
+    inputs["densities"] = next_ds
     return inputs
 
 def set_initial_conditions(inputs, timestep):
@@ -110,6 +115,7 @@ def update_densities(inputs, timestep):
         densities_after.append((masses[i] - mi[i])/(volumes[i]))
 
     inputs["new_densities"] = densities_after
+
     return inputs
 
 
@@ -119,7 +125,12 @@ def replenish_lost_mass(inputs, timestep):
     m, ma, mi = calculate_mass_of_melt(inputs, timestep)
     new_masses = []
     
+
+
     for i in range(0, len(new_densities), 1):
+        if i ==0:
+            if new_densities[i] <=0:
+                new_masses.append(  new_densities[i]*(volumes[i]-10000) + (10000*new_densities[i+1])  )
         if ma > 0:  # if there is ablation
             if i < len(new_densities)-1:
                 new_masses.append(new_densities[i]*(volumes[i]-(ma/new_densities[i])) + (new_densities[i+1]*(ma/new_densities[i])))
@@ -128,13 +139,16 @@ def replenish_lost_mass(inputs, timestep):
         else: # if there's no ablation, just give current value
             new_masses.append(new_densities[i]*(volumes[i]))
 
-    inputs["new_masses"] = new_masses
+
+    inputs["masses"] = new_masses
     
     return inputs
 
 def calculate_density_at_t_plus_one(inputs, timestep):
     new_densities = inputs["new_densities"]
+
     volumes = inputs["volumes"]
+    
     m, ma, mi = calculate_mass_of_melt(inputs, timestep)
 
     next_densities =[]
@@ -152,5 +166,20 @@ def calculate_density_at_t_plus_one(inputs, timestep):
         next_densities.append(0.89)
 
     inputs["next_densities"] = next_densities
+
+    return inputs
+
+
+def check_and_correct_negative_densities(inputs):
+    densities = inputs["densities"]
+    
+    for i in range(len(densities), 0, -1):
+        if densities[i] < 0:
+            if i == len(densities):
+                densities[i] = 0.89
+            else:
+                densities[i] = densities[i+1] 
+
+    inputs["densities"] = densities
 
     return inputs
