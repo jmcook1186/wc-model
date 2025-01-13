@@ -5,27 +5,29 @@ from inputs import inputs
 import matplotlib.pyplot as plt
 
 def run_model(inputs, start, stop, interval, csv, csv_path):
+    
     inputs_i = inputs[0].copy()
     outputs = []
 
     for i in range(start,stop,interval):
-        inputs_i = inner(inputs_i, csv, csv_path, i)
-        outputs.append(inputs_i)
+        
+        if csv:
+            inputs_i = load_inputs_from_csv(csv_path, inputs_i, i)
+
+        inputs_i = set_initial_conditions(inputs_i)
+        inputs_i = update_densities(inputs_i)
+        inputs_i = replenish_lost_mass(inputs_i)
+        inputs_i = calculate_density_at_t_plus_one(inputs_i)
+        inputs_i = setup_next_timestep(inputs_i)
+        inputs_i = check_and_correct_negative_densities(inputs_i)
+
+        # inputs_i = inner(inputs_i, csv, csv_path, i)
+        outputs.append(inputs_i.copy())
+    
+    print(outputs)
 
     return outputs
 
-def inner(inputs, csv, csv_path, i):
-    
-    inputs = inputs.copy()
-    if csv:
-        inputs = load_inputs_from_csv(csv_path, inputs, i)
-    inputs = set_initial_conditions(inputs, i)
-    inputs = update_densities(inputs, i)
-    inputs = replenish_lost_mass(inputs, i)
-    inputs = calculate_density_at_t_plus_one(inputs, i)
-    inputs = setup_next_timestep(inputs, i)
-
-    return inputs
 
 def load_inputs_from_csv(filepath, inputs, timestep):
 
@@ -49,12 +51,11 @@ def plot_density_profile(outputs):
     for i in range(0, len(outputs), 1):
         time = f"t{i}"
         plt.plot(depths, outputs[i]["densities"], label=time)
-        plt.legend()
 
     
     # for i in range(0, len(outputs), 1):
     #     plt.plot(depths, outputs[i]["densities"])
-    
+    plt.legend()    
     plt.show()
 
     return
