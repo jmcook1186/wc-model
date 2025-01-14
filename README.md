@@ -20,15 +20,19 @@ The default config has the `csv` parameter set to False, which means the model g
 
 ## Met data
 
-Often, you'll want to input data from a csv file. In this case, set `csv` to `True` int he call to `run_model()` and provide a filepath. Your csv file should have a header row and be structured as follows:
+Often, you'll want to input data from a csv file. In this case, set `csv` to `True` in the call to `run_model()` and provide a filepath. Your csv file should have a header row and be structured as follows:
 
-|TS	|DOY	|TOD	|k_star	|l_star	|wind_spd	|air_temp|	rel_hum|
-|---|---|---|---|---|---|---|---|
-|0	|217|	0	|10.85	|-56.475|	2.71|	0.73|	0.850775|
-|1	|217|	100	|1.082	|-42.03	| 3.18	|0.2	|0.867466833|
-|2	|217|	200	|1.322	|-39.269|	3.16|	0.17|	0.879960833|
+| TS  | DOY | TOD | k_star | l_star  | wind_spd | air_temp | rel_hum     |
+| --- | --- | --- | ------ | ------- | -------- | -------- | ----------- |
+| 0   | 217 | 0   | 10.85  | -56.475 | 2.71     | 0.73     | 0.850775    |
+| 1   | 217 | 100 | 1.082  | -42.03  | 3.18     | 0.2      | 0.867466833 |
+| 2   | 217 | 200 | 1.322  | -39.269 | 3.16     | 0.17     | 0.879960833 |
 
 ...
+
+Your function call will look as follows:
+
+`outputs = run_model(inputs, 1,10,1, Truee, '/home/Desktop/met-file.csv')`
 
 ## Modification from the Schuster model
 
@@ -56,3 +60,6 @@ Mi = m * (Qmi / m * Lf)
 Where m = mass of ice layer in kg, Qmi = energy available for internal melting in Wm-2, Qma = energy available for surface melting in Wm-2, , Lf = latent heat of fusion for ice at 0 C (333700 J kg-1)
 
 Ma and Mi then represent the mass of ice lost to ablation.
+
+
+We also consider the extinction coefficient reported in the paper of 0.006 m-1 to be several orders of magnitude incorrect. We think a more appropriate value for a wavelength-integrated extinction coefficient should be more like 1-5 m-1. We chose to set the default extinction coefficient to 2 m-1 here, as this seems like an appropriate estimate based on Fig 3 of [Grenfell and Maykut 1977](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/EE9874935EE49EB944960B83BC53397C/S0022143000021122a.pdf/optical_properties_of_ice_and_snow_in_the_arctic_basin.pdf).
