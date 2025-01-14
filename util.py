@@ -53,7 +53,10 @@ def plot_density_profile(outputs):
     
     # for i in range(0, len(outputs), 1):
     #     plt.plot(depths, outputs[i]["densities"])
-    plt.legend()    
+    plt.xlabel("depth below surface, m")
+    plt.ylabel("density, kg m-3")
+    plt.legend()
+    plt.savefig('/home/Desktop/wc-out.png')    
     plt.show()
 
     return

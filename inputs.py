@@ -3,7 +3,7 @@ inputs = [{
     "area_w": 1, # m
     "area_l": 1, # m
     "dense_ice_constant": 890, # what density to use for underlying unweathered ice
-    "extinction_coefficient" : 6, # m
+    "extinction_coefficient" : 3, # m
     "k_star" : 380, # Wm-2
     "delta_t" : 3600, # seconds
     "densities" : [600, 600, 600, 600, 600, 600], # kgm-3
