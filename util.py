@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 def run_model(inputs, start, stop, interval, csv, csv_path):
     
+    # create instance of inputs that will update in each timestep
     inputs_i = inputs[0].copy()
     outputs = []
 
@@ -18,13 +19,10 @@ def run_model(inputs, start, stop, interval, csv, csv_path):
         inputs_i = update_densities(inputs_i)
         inputs_i = replenish_lost_mass(inputs_i)
         inputs_i = calculate_density_at_t_plus_one(inputs_i)
-        inputs_i = setup_next_timestep(inputs_i)
         inputs_i = check_and_correct_negative_densities(inputs_i)
 
-        # inputs_i = inner(inputs_i, csv, csv_path, i)
+        # snapshot current state of inputs_i and push it to outputs
         outputs.append(inputs_i.copy())
-    
-    print(outputs)
 
     return outputs
 
