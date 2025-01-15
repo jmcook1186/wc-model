@@ -32,7 +32,7 @@ def load_inputs_from_csv(filepath, inputs, timestep):
     with open(filepath) as csv_file:
         csv_file = csv.reader(csv_file, delimiter=',')
         rows = list(csv_file)
-        inputs["k_star"] = float(rows[timestep+1][3]) #timestep + 1 because row 0 is header
+        inputs["inswrad"] = float(rows[timestep+1][3]) #timestep + 1 because row 0 is header
         inputs["l_star"] = float(rows[timestep+1][4])
         inputs["wind_spd"] = float(rows[timestep+1][5])
         inputs["air_temp"] = float(rows[timestep+1][6])

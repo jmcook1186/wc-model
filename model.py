@@ -1,12 +1,24 @@
-from math import exp
+from math import exp, log
 import matplotlib.pyplot as plt
+from eb_model import calculate_seb
 
 def set_initial_conditions(inputs):
     inputs["n_layers"] = set_n_layers(inputs)
     inputs["volumes"] = set_volumes(inputs)
     inputs["masses"] = set_mass(inputs)
     inputs["total_depth"] = set_total_column_depth(inputs)
+    inputs = set_sensible_turbulent_fluxes(inputs)
     inputs["k"] = set_k(inputs)
+    return inputs
+
+def set_sensible_turbulent_fluxes(inputs):
+    SWR,LWR,SHF,LHF = calculate_seb(
+	inputs["lat"], inputs["lon"], inputs["lon_ref"], inputs["day"], inputs["time"], inputs["summertime"],
+	inputs["slope"], inputs["aspect"], inputs["elevation"], inputs["met_elevation"], inputs["lapse"],
+	inputs["inswrad"], inputs["avp"], inputs["airtemp"], inputs["windspd"], inputs["albedo"], inputs["roughness"])
+    
+    inputs["qe"] = LHF
+    inputs["qh"] = SHF
 
     return inputs
 
@@ -48,7 +60,7 @@ def set_k(inputs):
 
     """
 
-    k_star = inputs["k_star"]
+    inswrad = inputs["inswrad"]
     layer_thicknesses = inputs["layer_thicknesses"]
     extinction_coefficient = inputs["extinction_coefficient"]
     delta_t = inputs["delta_t"]
@@ -57,8 +69,8 @@ def set_k(inputs):
     for i in range(0, len(layer_thicknesses), 1):
         zl = sum(layer_thicknesses[0:i+1])
         zu = zl-layer_thicknesses[i]
-        ku = k_star*exp(-extinction_coefficient*zu)
-        kl = k_star*exp(-extinction_coefficient*zl)
+        ku = inswrad*exp(-extinction_coefficient*zu)
+        kl = inswrad*exp(-extinction_coefficient*zl)
         kdiff = ku-kl
         k_star_n = kdiff * delta_t
         k_stars.append(k_star_n)
@@ -168,3 +180,45 @@ def check_and_correct_negative_densities(inputs):
     inputs["densities"] = densities
 
     return inputs
+
+
+
+# def iterate_qh_calc():
+
+#     initial_mo_length_scale = calculate_qh()
+
+#     return
+
+
+# def calculate_qh(inputs, temp, sensor_height, wind_speed, air_density, z0, zt, ze, specific_humidity):
+#     air_density = inputs["air_density"]*specific_humidity
+#     heat_of_air = calculate_heat_of_air(specific_humidity)
+#     vk = inputs["von_karmans_constant"]
+#     stability_correction = inputs["stability_correction"]
+#     mo_length_scale = calculate_mo_length_scale()
+
+#     numerator = air_density*heat_of_air*(vk**2)*wind_speed*temp
+#     denominator = (log(sensor_height/z0) + ((stability_correction * (sensor_height / L))/ mo_length_scale))* ( log(sensor_height/zt) +  stability_correction * sensor_height )
+    
+#     return qh, mo_length_scale
+
+
+# def calculate_surface_vapour_pressure(temp, relative_humidity):
+#   return (611 * 10**({7.5 * temp}/{237.3+temp})) * relative_humidity
+
+# def calculate_heat_of_air(specific_humidity):
+#     1004.67 * (1 + (0.84*specific_humidity))
+#     return
+
+
+# def calculate_mo_length_scale(air_density, heat_of_air):
+#     friction_velocity = calculate_friction_velocity()
+
+#     return
+
+# def calculate_friction_velocity(inputs, wind_speed, z, z0, mo_length_scale):
+#     vk = inputs["von_karmans_constant"]
+#     stability_correction = inputs["stability_correction"]
+#     mo_length_scale = calculate_mo_length_scale()
+#     u_star = vk * wind_speed / (log(z/z0) + stability_correction*(z * mo_length_scale))
+#     return
