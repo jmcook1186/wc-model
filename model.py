@@ -1,4 +1,4 @@
-from math import exp, log
+from math import exp, log, isnan
 import matplotlib.pyplot as plt
 from eb_model import calculate_seb
 
@@ -12,13 +12,21 @@ def set_initial_conditions(inputs):
     return inputs
 
 def set_sensible_turbulent_fluxes(inputs):
+
     SWR,LWR,SHF,LHF = calculate_seb(
 	inputs["lat"], inputs["lon"], inputs["lon_ref"], inputs["day"], inputs["time"], inputs["summertime"],
 	inputs["slope"], inputs["aspect"], inputs["elevation"], inputs["met_elevation"], inputs["lapse"],
 	inputs["inswrad"], inputs["avp"], inputs["airtemp"], inputs["windspd"], inputs["albedo"], inputs["roughness"])
     
-    inputs["qe"] = LHF
-    inputs["qh"] = SHF
+    if isnan(LHF):
+        inputs["qe"] = 0
+    else:
+        inputs["qe"] = LHF
+
+    if isnan(SHF):
+        inputs["qh"] = 0
+    else:
+        inputs["qh"] = SHF
 
     return inputs
 
@@ -60,7 +68,7 @@ def set_k(inputs):
 
     """
 
-    inswrad = inputs["inswrad"]
+    k_star = inputs["inswrad"]
     layer_thicknesses = inputs["layer_thicknesses"]
     extinction_coefficient = inputs["extinction_coefficient"]
     delta_t = inputs["delta_t"]
@@ -69,8 +77,8 @@ def set_k(inputs):
     for i in range(0, len(layer_thicknesses), 1):
         zl = sum(layer_thicknesses[0:i+1])
         zu = zl-layer_thicknesses[i]
-        ku = inswrad*exp(-extinction_coefficient*zu)
-        kl = inswrad*exp(-extinction_coefficient*zl)
+        ku = k_star*exp(-extinction_coefficient*zu)
+        kl = k_star*exp(-extinction_coefficient*zl)
         kdiff = ku-kl
         k_star_n = kdiff * delta_t
         k_stars.append(k_star_n)
