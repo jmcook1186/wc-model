@@ -1,11 +1,11 @@
 
 from model import *
 from util import *
-from inputs import inputs
+from config import inputs, config
 
-outputs = run_model(inputs, 1,30,1, True, '/home/joe/Desktop/Samplmet.csv')
+outputs = run_model(inputs, config)
 
 for i in range(0, len(outputs), 1):
     print(i, ": ", outputs[i]["qh"], "\n")
 
-plot_density_profile(outputs)
+plot_density_profile(outputs, config)

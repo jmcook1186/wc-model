@@ -1,18 +1,22 @@
 from util import *
 from model import *
 import csv
-from inputs import inputs
+from config import inputs
 import matplotlib.pyplot as plt
 
-def run_model(inputs, start, stop, interval, csv, csv_path):
+def run_model(inputs, config):
     
     # create instance of inputs that will update in each timestep
     inputs_i = inputs[0].copy()
+    start = config["start"]
+    stop = config["stop"]
+    interval = config["interval"]
+    csv_path = config["path_to_met_data"]
     outputs = []
 
     for i in range(start,stop,interval):
         
-        if csv:
+        if config["read_csv"]:
             inputs_i = load_inputs_from_csv(csv_path, inputs_i, i)
 
         inputs_i = set_initial_conditions(inputs_i)
@@ -44,7 +48,8 @@ def load_inputs_from_csv(filepath, inputs, timestep):
     return inputs
 
 
-def plot_density_profile(outputs):
+def plot_density_profile(outputs, config):
+    savepath = config["figure_savepath"]
     depths = outputs[0]["layer_thicknesses"]
     plt.figure(1)
     plt.ylim = (0.6,0.8)
@@ -53,13 +58,10 @@ def plot_density_profile(outputs):
         time = f"t{i}"
         plt.plot(depths, outputs[i]["densities"], label=time)
 
-    
-    # for i in range(0, len(outputs), 1):
-    #     plt.plot(depths, outputs[i]["densities"])
     plt.xlabel("depth below surface, m")
     plt.ylabel("density, kg m-3")
     plt.legend()
-    plt.savefig('/home/Desktop/wc-out.png')    
+    plt.savefig(savepath)    
     plt.show()
 
     return

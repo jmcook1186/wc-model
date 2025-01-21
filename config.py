@@ -22,3 +22,13 @@ inputs = [{
     "l_star" : 100, # net long wave radiation
 
 }]
+
+config = {
+    "read_csv": True,
+    "output_fluxes_to_csv": True,
+    "path_to_met_data": '/home/joe/Desktop/Samplmet.csv',
+    "start": 1,
+    "stop": 20,
+    "interval": 1,
+    "figure_savepath": "/home/joe/Desktop/wc-model.png"
+}
