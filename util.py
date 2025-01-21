@@ -30,8 +30,21 @@ def run_model(inputs, config):
 
         if config["output_fluxes_to_csv"]:
             write_fluxes_to_csv(outputs, config)
+        if config["output_ice_properties_to_csv"]:
+            write_ice_properties_to_csv(outputs, config)
 
     return outputs
+
+def write_ice_properties_to_csv(outputs, config):
+    header = ['day', 'time', 'shf', 'lhf', "densities per layer", "masses per layer", "volumes per layer"]
+    
+    with open(config["ice_properties_csv_savepath"], 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for i in range(0, len(outputs), 1):
+            data = [outputs[i]['day'],outputs[i]['time'],outputs[i]['densities'],outputs[i]['masses'], outputs[i]["volumes"]]
+            writer.writerow(data)
+    return
 
 def write_fluxes_to_csv(outputs, config):
 

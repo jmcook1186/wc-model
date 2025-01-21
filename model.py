@@ -84,10 +84,11 @@ def set_k(inputs):
         k_stars.append(k_star_n)
     
     # account for condition when K* is positive but qma is negative (pg 114, between eqs 4.12 and 4.13)
-    qma = calculate_surface_melt_energy(inputs)
-    if (k_stars[0] > 0) & (qma < 0):
-        k_stars[0] = k_star + qma
     
+    # qma = calculate_surface_melt_energy(inputs)
+    # if (k_stars[0] > 0) & (qma < 0):
+    #     k_stars[0] = k_star + qma
+
     return k_stars
 
 def calculate_surface_melt_energy(inputs):

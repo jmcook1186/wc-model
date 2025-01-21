@@ -28,11 +28,13 @@ inputs = [{
 
 config = {
     "read_csv": True,
-    "output_fluxes_to_csv": True,
-    "flux_csv_savepath": "/home/joe/Desktop/flux_data.csv",
-    "path_to_met_data": '/home/joe/Desktop/Samplmet.csv',
+    "output_ice_properties_to_csv": True,
+    "output_fluxes_to_csv": False,
+    "ice_properties_csv_savepath": "./ice_properties.csv",
+    "flux_csv_savepath": "./flux_data.csv",
+    "path_to_met_data": './ilu22-met-sch.csv',
     "start": 1,
     "stop": 20,
     "interval": 1,
-    "figure_savepath": "/home/joe/Desktop/wc-model.png"
+    "figure_savepath": "./wc-model.png"
 }
