@@ -28,7 +28,22 @@ def run_model(inputs, config):
         # snapshot current state of inputs_i and push it to outputs
         outputs.append(inputs_i.copy())
 
+        if config["output_fluxes_to_csv"]:
+            write_fluxes_to_csv(outputs, config)
+
     return outputs
+
+def write_fluxes_to_csv(outputs, config):
+
+    header = ['day', 'time', 'shf', 'lhf']
+    
+    with open(config["flux_csv_savepath"], 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for i in range(0, len(outputs), 1):
+            data = [outputs[i]['day'],outputs[i]['time'],outputs[i]['qe'],outputs[i]['qh']]
+            writer.writerow(data)
+    return
 
 
 def load_inputs_from_csv(filepath, inputs, timestep):
