@@ -28,10 +28,8 @@ inputs = [{
 
 config = {
     "read_csv": True,
-    "output_ice_properties_to_csv": True,
-    "output_fluxes_to_csv": False,
-    "ice_properties_csv_savepath": "./ice_properties.csv",
-    "flux_csv_savepath": "./flux_data.csv",
+    "outputs_to_csv": True,
+    "output_csv_savepath": "./outputs.csv",
     "path_to_met_data": './ilu22-met-sch.csv',
     "start": 1,
     "stop": 20,

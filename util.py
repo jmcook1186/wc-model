@@ -28,35 +28,27 @@ def run_model(inputs, config):
         # snapshot current state of inputs_i and push it to outputs
         outputs.append(inputs_i.copy())
 
-        if config["output_fluxes_to_csv"]:
-            write_fluxes_to_csv(outputs, config)
-        if config["output_ice_properties_to_csv"]:
-            write_ice_properties_to_csv(outputs, config)
+        if config["outputs_to_csv"]:
+            write_outputs_to_csv(outputs, config)
+
 
     return outputs
 
-def write_ice_properties_to_csv(outputs, config):
-    header = ['day', 'time', 'shf', 'lhf', "densities per layer", "masses per layer", "volumes per layer"]
+def write_outputs_to_csv(outputs, config):
+    header = outputs[0].keys()
     
-    with open(config["ice_properties_csv_savepath"], 'w') as f:
+    with open(config["output_csv_savepath"], 'w') as f:
+        data = []
         writer = csv.writer(f)
         writer.writerow(header)
         for i in range(0, len(outputs), 1):
-            data = [outputs[i]['day'],outputs[i]['time'],outputs[i]['densities'],outputs[i]['masses'], outputs[i]["volumes"]]
+            for key in outputs[i].keys():
+                data.append(outputs[i][key])
+            #data = [outputs[i]['day'],outputs[i]['time'],outputs[i]['qe'],outputs[i]['qh'],outputs[i]['densities'],outputs[i]['masses'], outputs[i]["volumes"]]
             writer.writerow(data)
+            data = []
     return
 
-def write_fluxes_to_csv(outputs, config):
-
-    header = ['day', 'time', 'shf', 'lhf']
-    
-    with open(config["flux_csv_savepath"], 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
-        for i in range(0, len(outputs), 1):
-            data = [outputs[i]['day'],outputs[i]['time'],outputs[i]['qe'],outputs[i]['qh']]
-            writer.writerow(data)
-    return
 
 
 def load_inputs_from_csv(filepath, inputs, timestep):
