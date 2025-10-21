@@ -30,7 +30,7 @@ config = {
     "read_csv": True,
     "outputs_to_csv": True,
     "output_csv_savepath": "./outputs.csv",
-    "path_to_met_data": './ilu22-met-sch.csv',
+    "path_to_met_data": './met-data.csv',
     "start": 1,
     "stop": 20,
     "interval": 1,
